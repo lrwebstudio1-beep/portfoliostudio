@@ -2,8 +2,6 @@
   const pages = { home: document.getElementById('page-home'), work: document.getElementById('page-work'), services: document.getElementById('page-services'), contact: document.getElementById('page-contact') };
   const navBtns = { work: document.getElementById('navWork'), services: document.getElementById('navServices'), contact: document.getElementById('navContact') };
   const wipe = document.getElementById('wipe');
-  const pv = document.getElementById('pv');
-  const pvimg = document.getElementById('pvimg');
 
   let view = 'home';
   let busy = false;
@@ -29,7 +27,6 @@
   function goTo(v) {
     if (busy || v === view) return;
     busy = true;
-    if (pv) pv.classList.remove('show');
     wipe.className = 'wipe on';
     setTimeout(() => {
       window.scrollTo(0, 0);
@@ -105,23 +102,35 @@
     clk.textContent = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Skopje', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date());
   }, 1000);
 
-  // cursor-following preview + custom cursor
-  let tx = 0, ty = 0, px = 0, py = 0;
-  addEventListener('mousemove', e => { tx = e.clientX + 24; ty = e.clientY + 24; });
-  const loop = () => {
-    px += (tx - px) * 0.12; py += (ty - py) * 0.12;
-    if (pv) pv.style.transform = 'translate(' + Math.min(px, innerWidth - (pv.offsetWidth + 30)) + 'px,' + Math.min(py, innerHeight - (pv.offsetHeight + 30)) + 'px)' + (pv.classList.contains('show') ? '' : ' scale(.92)');
-    requestAnimationFrame(loop);
-  };
-  if (matchMedia('(pointer:fine)').matches) {
-    loop();
-    document.addEventListener('mouseover', e => {
-      const r = e.target.closest && e.target.closest('.prow');
-      if (r && pv) { pvimg.src = r.dataset.img; pvimg.alt = r.dataset.ph || ''; pv.classList.add('show'); }
-      else if (pv) pv.classList.remove('show');
-    });
+  // click anywhere in a work row to reveal its screenshot inline, right in the row
+  function closeRowimg(el) {
+    el.style.height = el.scrollHeight + 'px';
+    el.classList.remove('in');
+    requestAnimationFrame(() => { el.style.height = '0px'; });
+    setTimeout(() => el.remove(), 500);
   }
+  document.querySelectorAll('.prow').forEach(row => {
+    row.addEventListener('click', () => {
+      const open = row.querySelector('.rowimg');
+      if (open) { closeRowimg(open); return; }
+      document.querySelectorAll('.rowimg').forEach(closeRowimg);
+      const wrap = document.createElement('div');
+      wrap.className = 'rowimg';
+      const img = document.createElement('img');
+      img.src = row.dataset.img;
+      img.alt = row.dataset.ph || '';
+      img.loading = 'lazy';
+      wrap.appendChild(img);
+      row.appendChild(wrap);
+      const target = wrap.scrollHeight;
+      requestAnimationFrame(() => {
+        wrap.style.height = target + 'px';
+        wrap.classList.add('in');
+      });
+    });
+  });
 
+  // custom cursor (desktop only)
   const cur = document.getElementById('cur');
   if (cur && matchMedia('(pointer:fine)').matches) {
     document.body.classList.add('hascur');

@@ -74,11 +74,16 @@ body{margin:0;background:#0b0b0c;color:#f2f1ee;font-family:'Archivo',sans-serif;
 /* work list (work page) */
 .plist{border-bottom:1px solid #232325}
 .prow{display:grid;grid-template-columns:64px 1.7fr 1fr auto;align-items:center;gap:18px;padding:28px 4vw;border-top:1px solid #232325;cursor:pointer;transition:background .25s,color .25s}
-.prow:hover{background:var(--acc,#D9FF3B);color:#0b0b0c}
-.prow:hover .dim{color:#0b0b0c}
 .pname{font-size:clamp(26px,3.8vw,58px);margin:0}
 .parr{font-size:clamp(20px,2vw,30px);opacity:0;transform:translateX(-10px);transition:.3s}
-.prow:hover .parr{opacity:1;transform:none}
+@media(hover:hover){
+  .prow:hover{background:var(--acc,#D9FF3B);color:#0b0b0c}
+  .prow:hover .dim{color:#0b0b0c}
+  .prow:hover .parr{opacity:1;transform:none}
+}
+.rowimg{grid-column:1/-1;overflow:hidden;height:0;margin-top:0;transition:height .5s cubic-bezier(.22,1,.36,1),margin-top .5s cubic-bezier(.22,1,.36,1)}
+.rowimg img{width:100%;aspect-ratio:2/1;object-fit:cover;display:block;border:1px solid var(--acc,#D9FF3B);opacity:0;transform:scale(1.06);transition:opacity .5s ease .05s,transform .6s cubic-bezier(.22,1,.36,1) .05s}
+.rowimg.in img{opacity:1;transform:scale(1)}
 
 /* services rows */
 .srow{display:grid;grid-template-columns:64px 1fr 1fr;gap:24px;border-top:1px solid #232325;padding:44px 0;align-items:start}
@@ -124,11 +129,6 @@ body{margin:0;background:#0b0b0c;color:#f2f1ee;font-family:'Archivo',sans-serif;
 .pre{position:fixed;inset:0;background:#0b0b0c;z-index:100;display:flex;align-items:flex-end;justify-content:space-between;padding:3vw 4vw;transition:transform .7s cubic-bezier(.76,0,.24,1)}
 .pre.done{transform:translateY(-101%)}
 .pren{font-size:clamp(80px,14vw,220px);line-height:.8}
-
-/* cursor-follow preview card */
-.pv{position:fixed;top:0;left:0;z-index:60;width:min(420px,36vw);aspect-ratio:2/1;pointer-events:none;opacity:0;transform:scale(.92);transition:opacity .25s,transform .25s;background:repeating-linear-gradient(45deg,#151516 0 10px,#0f0f10 10px 20px);border:1px solid var(--acc,#D9FF3B);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.pv.show{opacity:1;transform:scale(1)}
-.pv img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* magnetic buttons */
 .mag{display:inline-block;will-change:transform}
