@@ -102,15 +102,39 @@
     clk.textContent = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Skopje', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date());
   }, 1000);
 
-  // click anywhere in a work row to reveal its screenshot inline, right in the row
+  // work rows: desktop reveals the screenshot inline, mobile opens a full-screen lightbox
+  const isMobileNav = () => matchMedia('(max-width:900px)').matches;
+
   function closeRowimg(el) {
     el.style.height = el.scrollHeight + 'px';
     el.classList.remove('in');
     requestAnimationFrame(() => { el.style.height = '0px'; });
     setTimeout(() => el.remove(), 500);
   }
+
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbClose = document.getElementById('lbClose');
+  function openLightbox(row) {
+    lbImg.src = row.dataset.img;
+    lbImg.alt = row.dataset.ph || '';
+    const name = row.querySelector('.pname');
+    lbTitle.textContent = name ? name.textContent : '';
+    lightbox.classList.add('open');
+    document.body.classList.add('noscroll');
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.classList.remove('noscroll');
+  }
+  lbClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
   document.querySelectorAll('.prow').forEach(row => {
     row.addEventListener('click', () => {
+      if (isMobileNav()) { openLightbox(row); return; }
       const open = row.querySelector('.rowimg');
       if (open) { closeRowimg(open); return; }
       document.querySelectorAll('.rowimg').forEach(closeRowimg);
